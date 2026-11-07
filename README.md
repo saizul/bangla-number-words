@@ -74,7 +74,18 @@ banglaOrdinalShort(4);   // "৪র্থ"
 banglaDayOrdinal(19);    // "১৯শে"
 englishOrdinalWords(21); // "Twenty First"
 englishOrdinalShort(22); // "22nd"
+englishOrdinalSuffix(113); // "th"
+englishOrdinalWords(21, { case: 'lower', hyphenate: true }); // "twenty-first"
+englishOrdinalWords(100, { case: 'lower' });                 // "one hundredth"
+
+// one entry point for both languages and both styles
+formatOrdinal(11);                                  // "11th"
+formatOrdinal(3, { style: 'words' });               // "Third"
+formatOrdinal(4, { locale: 'bn' });                 // "৪র্থ"
+formatOrdinal(1, { locale: 'bn', style: 'words' }); // "প্রথম"
 ```
+
+Ordinals need a positive integer (a `RangeError` is thrown for zero, negatives and fractions). Bangla digits and numeric strings are accepted as input.
 
 ### Taka
 

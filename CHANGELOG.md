@@ -4,6 +4,12 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `formatOrdinal(n, { locale, style })` formats ordinals in English or Bangla, as digits (1st, ১ম) or words.
+- `englishOrdinalSuffix(n)` returns `st`, `nd`, `rd` or `th`.
+
 ## [1.0.0] - 2026-11-07
 
 ### Added

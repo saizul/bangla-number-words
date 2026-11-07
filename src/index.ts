@@ -10,7 +10,10 @@ export {
   banglaDayOrdinal,
   englishOrdinalWords,
   englishOrdinalShort,
+  englishOrdinalSuffix,
+  formatOrdinal,
 } from './ordinal';
+export type { FormatOrdinalOptions } from './ordinal';
 export { takaWords, takaWordsBn, takaWordsEn } from './taka';
 export type { TakaOptions, TakaBanglaOptions, TakaEnglishOptions } from './taka';
 export { formatNumber, formatCurrency, groupDigits, parseNumber, parseNumberString } from './format';

@@ -73,8 +73,40 @@ export function englishOrdinalWords(input: NumberInput, options: EnglishWordsOpt
 /** English ordinal with digits: 1st, 2nd, 3rd, 4th, 11th, 12th, 13th, 21st, 112th. */
 export function englishOrdinalShort(input: NumberInput): string {
   const int = positiveInteger(input);
+  return int + englishOrdinalSuffix(int);
+}
+
+/** English ordinal suffix for a number: "st", "nd", "rd" or "th" (11, 12 and 13 take "th"). */
+export function englishOrdinalSuffix(input: NumberInput): string {
+  const int = positiveInteger(input);
   const last2 = Number(int.slice(-2));
   const last = last2 % 10;
-  const suffix = last2 >= 11 && last2 <= 13 ? 'th' : last === 1 ? 'st' : last === 2 ? 'nd' : last === 3 ? 'rd' : 'th';
-  return int + suffix;
+  if (last2 >= 11 && last2 <= 13) return 'th';
+  return last === 1 ? 'st' : last === 2 ? 'nd' : last === 3 ? 'rd' : 'th';
+}
+
+export interface FormatOrdinalOptions extends EnglishWordsOptions, BanglaWordsOptions {
+  /** 'en' (1st, First) or 'bn' (১ম, প্রথম). Default 'en'. */
+  locale?: 'en' | 'bn';
+  /** 'short' uses digits and a suffix (1st, ১ম); 'words' spells it out. Default 'short'. */
+  style?: 'short' | 'words';
+  /** Digit script for the Bangla short form. Default 'bn'. */
+  digits?: 'bn' | 'en';
+}
+
+/**
+ * Format a positive integer as an ordinal: `1st`, `2nd`, `3rd`, `11th`, `21st` by default.
+ * Use `{ style: 'words' }` for "First", `{ locale: 'bn' }` for Bangla (`১ম`, `প্রথম`).
+ *
+ * @example
+ * formatOrdinal(22);                                          // "22nd"
+ * formatOrdinal(21, { style: 'words', case: 'lower', hyphenate: true }); // "twenty-first"
+ * formatOrdinal(4, { locale: 'bn' });                         // "৪র্থ"
+ */
+export function formatOrdinal(input: NumberInput, options: FormatOrdinalOptions = {}): string {
+  const { locale = 'en', style = 'short' } = options;
+  if (locale === 'bn') {
+    return style === 'words' ? banglaOrdinalWords(input, options) : banglaOrdinalShort(input, options);
+  }
+  return style === 'words' ? englishOrdinalWords(input, options) : englishOrdinalShort(input);
 }
