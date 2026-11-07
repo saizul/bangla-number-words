@@ -1,0 +1,159 @@
+# bangla-number-words
+
+Numbers to Bangla and English words, Taka amounts for invoices and cheques, lakh/crore formatting, digit conversion and the Bangla (Bangabda) calendar. Zero runtime dependencies, strict TypeScript, ESM and CommonJS.
+
+[বাংলা](#বাংলা) | English
+
+```bash
+npm install bangla-number-words
+```
+
+## Features
+
+- Bangla words in the Bangladeshi system: হাজার, লক্ষ (or লাখ), কোটি, with crore repetition above 99 crore ("দশ হাজার কোটি", "এক কোটি কোটি")
+- Decimals (দশমিক), negatives, arbitrary size via `bigint` or numeric strings
+- Ordinals: প্রথম, দ্বিতীয় ... দশম, then `তম`; short forms (১ম, ২য়, ৩য়, ৪র্থ), date forms (১লা, ২রা)
+- English words in the South Asian system (thousand, lakh, crore) or the international system
+- Taka for invoices and cheques, in Bangla and English
+- Lakh/crore grouping (`1,23,45,678`) in Bangla or English digits and parsing back
+- Bangla calendar conversion with month, weekday and season names
+
+## Usage
+
+```ts
+import {
+  banglaWords, englishWords, takaWords,
+  formatNumber, parseNumber, toBanglaDigits,
+  gregorianToBangla, formatBanglaDate,
+} from 'bangla-number-words';
+
+banglaWords(125000);          // "এক লক্ষ পঁচিশ হাজার"
+banglaWords(3.14);            // "তিন দশমিক এক চার"
+banglaWords(-5);              // "ঋণাত্মক পাঁচ"
+banglaWords(10n ** 14n);      // "এক কোটি কোটি"
+banglaWords(100000, { lakh: 'লাখ' }); // "এক লাখ"
+
+englishWords(1234567);        // "Twelve Lakh Thirty Four Thousand Five Hundred Sixty Seven"
+englishWords(1234567, { system: 'international' });
+// "One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"
+
+takaWords(1250.5);
+// "এক হাজার দুইশত পঞ্চাশ টাকা পঞ্চাশ পয়সা মাত্র"
+takaWords(1250.5, { lang: 'en' });
+// "One Thousand Two Hundred Fifty Taka and Fifty Paisa Only"
+
+formatNumber(12345678);                    // "1,23,45,678"
+formatNumber(12345678, { digits: 'bn' });  // "১,২৩,৪৫,৬৭৮"
+parseNumber('১,২৩,৪৫,৬৭৮.৫০');            // 12345678.5
+toBanglaDigits(2026);                      // "২০২৬"
+
+formatBanglaDate('2024-04-14', { weekday: true }); // "রবিবার, ১ বৈশাখ ১৪৩১"
+```
+
+CommonJS works too: `const { banglaWords } = require('bangla-number-words');`
+
+### Input types
+
+Every function that accepts a number takes `number | bigint | string`. Strings may use Bangla digits. Use strings or `bigint` for values beyond `Number.MAX_SAFE_INTEGER`; JavaScript numbers lose precision there.
+
+### Words
+
+| Function | Options |
+| --- | --- |
+| `banglaWords(n, opts)` | `lakh: 'লক্ষ' \| 'লাখ'`, `hundred: 'শত' \| 'শ'`, `negativeWord`, `decimalWord` |
+| `englishWords(n, opts)` | `system: 'indian' \| 'international'`, `case: 'title' \| 'lower' \| 'upper' \| 'sentence'`, `hyphenate`, `useAnd`, `negativeWord`, `decimalWord` |
+
+The international system supports values below 10^36.
+
+### Ordinals
+
+```ts
+banglaOrdinalWords(1);   // "প্রথম"
+banglaOrdinalWords(11);  // "এগারোতম"
+banglaOrdinalShort(4);   // "৪র্থ"
+banglaDayOrdinal(19);    // "১৯শে"
+englishOrdinalWords(21); // "Twenty First"
+englishOrdinalShort(22); // "22nd"
+```
+
+### Taka
+
+`takaWordsBn`, `takaWordsEn` and `takaWords` round to two decimals (half up). Options: `majorUnit`, `minorUnit`, `suffix` (`''` to omit), `showZeroMinor`, plus the word options above and `negativeWord`/`joiner` for English.
+
+### Formatting and parsing
+
+`formatNumber(n, { digits, grouping, minimumFractionDigits, maximumFractionDigits, separator, decimalSeparator })`, `formatCurrency(n)` (`৳12,34,567.89`), `parseNumber(text)` (NaN on failure) and `parseNumberString(text)` (canonical string or `null`, exact for huge values).
+
+### Bangla calendar
+
+```ts
+gregorianToBangla('2024-04-14');
+// { year: 1431, month: 1, day: 1, monthName: 'বৈশাখ', weekdayName: 'রবিবার', season: 'গ্রীষ্ম', ... }
+banglaToGregorian({ year: 1431, month: 9, day: 1 }); // { year: 2024, month: 12, day: 16 }
+formatBanglaDate('2024-12-16', { ordinalDay: true }); // "১লা পৌষ ১৪৩১"
+```
+
+Dates may be a `Date` (interpreted in local time), an ISO `YYYY-MM-DD` string or `{ year, month, day }`.
+
+#### Calendar rules
+
+This package implements the revised Bangladeshi national calendar (the Bangla Academy reform, with the later revision of month lengths), where Pohela Boishakh always falls on 14 April:
+
+- The year begins on 14 April (1 Boishakh). Bangla year = Gregorian year - 593 from 14 April onward.
+- Boishakh to Ashwin (the first six months) have 31 days.
+- Kartik, Agrahayan, Poush, Magh and Choitro have 30 days.
+- Falgun has 29 days, or 30 in a leap year. Bangla year B is a leap year when Gregorian year B + 594 is a leap year (the year in which that Falgun falls).
+
+Under these rules 14 April is always 1 Boishakh, 14 February is 1 Falgun, 15 March is 1 Choitro, and 16 December 2024 is 1 Poush 1431. The tests pin these reference dates. If an official gazette in your jurisdiction differs for a specific year, please open an issue with a citation. The rules are a civil calendar convention, not an astronomical or lunar calendar; it does not compute traditional (Hindu) Bengali calendar dates used in West Bengal.
+
+> **Note:** the rules above are implemented from publicly documented descriptions of the revised calendar and verified against well-known reference dates (14 April = 1 Boishakh, 16 December = 1 Poush). Please cross-check with the official calendar for legal or government use.
+
+## Development
+
+```bash
+npm install
+npm run lint && npm test && npm run build
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Licensed under MIT, by [Saizul Amin](https://saizul.com).
+
+---
+
+## বাংলা
+
+সংখ্যাকে বাংলা ও ইংরেজি কথায় রূপান্তর, চেক ও ইনভয়েসের জন্য টাকার অঙ্ক কথায়, লক্ষ/কোটি হিসাবে কমা বসানো, বাংলা-ইংরেজি অঙ্ক রূপান্তর এবং বাংলা সন (বঙ্গাব্দ) ক্যালেন্ডার। কোনো রানটাইম ডিপেন্ডেন্সি নেই।
+
+```bash
+npm install bangla-number-words
+```
+
+### ব্যবহার
+
+```ts
+import { banglaWords, takaWords, formatNumber, parseNumber, formatBanglaDate } from 'bangla-number-words';
+
+banglaWords(125000);   // "এক লক্ষ পঁচিশ হাজার"
+banglaWords(3.14);     // "তিন দশমিক এক চার"
+takaWords(1250.5);     // "এক হাজার দুইশত পঞ্চাশ টাকা পঞ্চাশ পয়সা মাত্র"
+takaWords(1250.5, { lang: 'en' }); // "One Thousand Two Hundred Fifty Taka and Fifty Paisa Only"
+formatNumber(12345678, { digits: 'bn' }); // "১,২৩,৪৫,৬৭৮"
+parseNumber('১,২৩,৪৫,৬৭৮');              // 12345678
+formatBanglaDate('2024-04-14');           // "১ বৈশাখ ১৪৩১"
+```
+
+### বৈশিষ্ট্য
+
+- হাজার, লক্ষ (বা লাখ), কোটি; ৯৯ কোটির বেশি হলে কোটি পুনরাবৃত্তি ("দশ হাজার কোটি")
+- দশমিক, ঋণাত্মক সংখ্যা, `bigint` ও স্ট্রিং ইনপুটে যেকোনো বড় সংখ্যা
+- ক্রমবাচক সংখ্যা: প্রথম, দ্বিতীয়, তৃতীয় ... দশম, এরপর "তম"; সংক্ষিপ্ত রূপ ১ম, ২য়, ৩য়, ৪র্থ; তারিখের রূপ ১লা, ২রা
+- ইংরেজিতে দক্ষিণ এশীয় পদ্ধতি (thousand, lakh, crore) অথবা আন্তর্জাতিক পদ্ধতি
+- টাকার অঙ্ক কথায় (বাংলা ও ইংরেজি), ইউনিট ও শেষ শব্দ কনফিগার করা যায়
+- বাংলা সন: গ্রেগরিয়ান থেকে বঙ্গাব্দ এবং উল্টোটা, মাস, বার ও ঋতুর নাম
+
+### বাংলা সনের নিয়ম
+
+সংশোধিত বাংলাদেশ পঞ্জিকার নিয়ম অনুসরণ করা হয়েছে: ১ বৈশাখ প্রতি বছর ১৪ এপ্রিল। বৈশাখ থেকে আশ্বিন, প্রথম ছয় মাস ৩১ দিন। কার্তিক, অগ্রহায়ণ, পৌষ, মাঘ ও চৈত্র ৩০ দিন। ফাল্গুন ২৯ দিন, অধিবর্ষে ৩০ দিন (বঙ্গাব্দ B-এর ফাল্গুন যে গ্রেগরিয়ান বছরে পড়ে, অর্থাৎ B + ৫৯৪, সেটি অধিবর্ষ হলে)। এই নিয়মে ১৬ ডিসেম্বর ২০২৪ = ১ পৌষ ১৪৩১। টেস্টে এই রেফারেন্স তারিখগুলো যাচাই করা আছে।
+
+### লাইসেন্স
+
+MIT, [সাইজুল আমিন](https://saizul.com)।
