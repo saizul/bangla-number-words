@@ -18,6 +18,18 @@ npm install bangla-number-words
 - Lakh/crore grouping (`1,23,45,678`) in Bangla or English digits and parsing back
 - Bangla calendar conversion with month, weekday and season names
 
+
+## Install from GitHub Packages
+
+Releases are also published to [GitHub Packages](https://github.com/saizul/bangla-number-words/pkgs/npm/bangla-number-words) as `@saizul/bangla-number-words`:
+
+```bash
+echo "@saizul:registry=https://npm.pkg.github.com" >> .npmrc
+npm install @saizul/bangla-number-words
+```
+
+GitHub Packages needs a personal access token with `read:packages` in your `~/.npmrc` (`//npm.pkg.github.com/:_authToken=YOUR_TOKEN`).
+
 ## Usage
 
 ```ts
