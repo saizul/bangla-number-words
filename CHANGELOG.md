@@ -7,6 +7,7 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- `wordsToNumber` and `wordsToNumberString` parse Bangla number words back into numbers (exact strings for huge values), accepting লক্ষ/লাখ and শত/শ/শো spellings and rejecting malformed input.
 - `formatOrdinal(n, { locale, style })` formats ordinals in English or Bangla, as digits (1st, ১ম) or words.
 - `englishOrdinalSuffix(n)` returns `st`, `nd`, `rd` or `th`.
 
