@@ -2,6 +2,8 @@ export { toBanglaDigits, toEnglishDigits, hasBanglaDigits, isBanglaDigits } from
 export type { NumberInput } from './numeric';
 export { banglaWords, BN_NAMES } from './words-bn';
 export type { BanglaWordsOptions } from './words-bn';
+export { wordsToNumber, wordsToNumberString } from './parse-words';
+export type { WordsToNumberOptions } from './parse-words';
 export { englishWords } from './words-en';
 export type { EnglishWordsOptions, EnglishSystem, EnglishCase } from './words-en';
 export {

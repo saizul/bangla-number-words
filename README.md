@@ -43,6 +43,7 @@ takaWords(1250.5, { lang: 'en' });
 // "One Thousand Two Hundred Fifty Taka and Fifty Paisa Only"
 
 formatNumber(12345678);                    // "1,23,45,678"
+wordsToNumber('এক হাজার দুইশত'); // 1200 (উল্টো রূপান্তর; বড় সংখ্যায় wordsToNumberString)
 formatNumber(12345678, { digits: 'bn' });  // "১,২৩,৪৫,৬৭৮"
 parseNumber('১,২৩,৪৫,৬৭৮.৫০');            // 12345678.5
 toBanglaDigits(2026);                      // "২০২৬"
@@ -141,7 +142,7 @@ npm install bangla-number-words
 ### ব্যবহার
 
 ```ts
-import { banglaWords, takaWords, formatNumber, parseNumber, formatBanglaDate } from 'bangla-number-words';
+import { banglaWords, wordsToNumber, takaWords, formatNumber, parseNumber, formatBanglaDate } from 'bangla-number-words';
 
 banglaWords(125000);   // "এক লক্ষ পঁচিশ হাজার"
 banglaWords(3.14);     // "তিন দশমিক এক চার"
