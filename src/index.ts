@@ -20,6 +20,8 @@ export { takaWords, takaWordsBn, takaWordsEn } from './taka';
 export type { TakaOptions, TakaBanglaOptions, TakaEnglishOptions } from './taka';
 export { formatNumber, formatCurrency, groupDigits, parseNumber, parseNumberString } from './format';
 export type { FormatNumberOptions } from './format';
+export { formatCompact, parseCompact, parseCompactString } from './compact';
+export type { FormatCompactOptions, CompactUnit } from './compact';
 export {
   BANGLA_MONTHS,
   BANGLA_MONTHS_EN,

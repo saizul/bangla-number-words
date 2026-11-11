@@ -16,6 +16,7 @@ npm install bangla-number-words
 - English words in the South Asian system (thousand, lakh, crore) or the international system
 - Taka for invoices and cheques, in Bangla and English
 - Lakh/crore grouping (`1,23,45,678`) in Bangla or English digits and parsing back
+- Compact notation for dashboards and headlines: `12.5 Lakh`, `১২.৫ লক্ষ`, `৳3.45Cr`, and parsing back
 - Bangla calendar conversion with month, weekday and season names
 
 
@@ -108,6 +109,39 @@ Ordinals need a positive integer (a `RangeError` is thrown for zero, negatives a
 
 `formatNumber(n, { digits, grouping, minimumFractionDigits, maximumFractionDigits, separator, decimalSeparator })`, `formatCurrency(n)` (`৳12,34,567.89`), `parseNumber(text)` (NaN on failure) and `parseNumberString(text)` (canonical string or `null`, exact for huge values).
 
+### Compact notation (thousand, lakh, crore)
+
+```ts
+formatCompact(1250000);                                  // "12.5 Lakh"
+formatCompact(1250000, { locale: 'bn' });                // "১২.৫ লক্ষ"
+formatCompact(34500000, { style: 'short' });             // "3.45Cr"
+formatCompact(34500000, { symbol: '৳', locale: 'bn' });  // "৳৩.৪৫ কোটি"
+formatCompact(1500);                                     // "1.5 Thousand"
+formatCompact(45000, { thousand: false });               // "45,000"
+formatCompact(99999.6, { maximumFractionDigits: 0 });    // "1 Lakh"
+formatCompact(123456789012n);                            // "12,345.68 Crore"
+formatCompact(100000, { locale: 'bn', lakh: 'লাখ' });     // "১ লাখ"
+formatCompact(250000, { units: { lakh: 'Lac' } });       // "2.5 Lac"
+
+parseCompact('১২.৫ লক্ষ');        // 1250000
+parseCompact('৳3.45Cr');          // 34500000
+parseCompactString('2.5 crore');  // "25000000" (exact string, null when invalid)
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `locale` | `'en'` | `'en'` (Thousand, Lakh, Crore) or `'bn'` (হাজার, লক্ষ, কোটি) |
+| `digits` | follows `locale` | `'bn'` or `'en'` digits for the number |
+| `style` | `'long'` | `'short'` gives `K`, `L`, `Cr` with no space (English only) |
+| `maximumFractionDigits` | `2` | rounds half-up; trailing zeros are dropped |
+| `minimumFractionDigits` | `0` | pads with zeros (`"12.50 Lakh"`) |
+| `thousand` | `true` | `false` writes values below one lakh in full |
+| `lakh` | `'লক্ষ'` | `'লাখ'` for the colloquial Bangla word |
+| `units` | | replace any label: `{ thousand, lakh, crore }` |
+| `symbol` | `''` | prefix such as `'৳'`, placed after the minus sign |
+
+Values below 1,000 keep their own digits (`formatCompact(999)` is `"999"`), and anything from one crore up is expressed in crore with lakh/crore grouping. The parser accepts English and Bangla digits and these units in any letter case: `K`, `Thousand`, `হাজার`, `L`, `Lac`, `Lakh`, `লক্ষ`, `লাখ`, `Cr`, `Crore`, `কোটি` (plural `s` allowed), with an optional `৳`, `Tk` or `BDT` prefix.
+
 ### Bangla calendar
 
 ```ts
@@ -167,6 +201,7 @@ formatBanglaDate('2024-04-14');           // "১ বৈশাখ ১৪৩১"
 
 ### বৈশিষ্ট্য
 
+- সংক্ষিপ্ত রূপ: `formatCompact(1250000, { locale: 'bn' })` দেয় "১২.৫ লক্ষ"; `parseCompact('১২.৫ লক্ষ')` দেয় 1250000
 - হাজার, লক্ষ (বা লাখ), কোটি; ৯৯ কোটির বেশি হলে কোটি পুনরাবৃত্তি ("দশ হাজার কোটি")
 - দশমিক, ঋণাত্মক সংখ্যা, `bigint` ও স্ট্রিং ইনপুটে যেকোনো বড় সংখ্যা
 - ক্রমবাচক সংখ্যা: প্রথম, দ্বিতীয়, তৃতীয় ... দশম, এরপর "তম"; সংক্ষিপ্ত রূপ ১ম, ২য়, ৩য়, ৪র্থ; তারিখের রূপ ১লা, ২রা
