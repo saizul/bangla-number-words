@@ -12,6 +12,9 @@ All notable changes to this project are documented here. The format follows
 - `englishOrdinalSuffix(n)` returns `st`, `nd`, `rd` or `th`.
 - `formatCompact(n, options)` writes numbers in compact thousand/lakh/crore notation (`12.5 Lakh`, `১২.৫ লক্ষ`, `৳3.45Cr`) with half-up rounding, long or short English labels, custom unit labels and an optional currency symbol.
 - `parseCompact` and `parseCompactString` read compact notation back (`'১২.৫ লক্ষ'` -> `1250000`), exact for values of any size.
+- `parseBanglaDate` and `tryParseBanglaDate` read Bangla calendar dates written in Bangla or English (`'রবিবার, ১লা বৈশাখ ১৪৩১'`, `'1st Baishakh, 1431 BS'`, `'1431-01-01'`) back into `{ year, month, day }`, accepting common month spelling variants and rejecting impossible dates, mismatched day suffixes and wrong weekdays.
+- Bangla date arithmetic: `addBanglaDays`, `addBanglaMonths` and `addBanglaYears` (clamping to the end of shorter months, including 30 Falgun), `banglaDaysBetween` and `compareBanglaDates`.
+- `banglaMonthCalendar(year, month, { weekStart })` builds a week-by-week month grid with the matching Gregorian date for every cell.
 
 ## [1.0.0] - 2026-11-07
 

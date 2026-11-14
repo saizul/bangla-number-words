@@ -17,7 +17,7 @@ npm install bangla-number-words
 - Taka for invoices and cheques, in Bangla and English
 - Lakh/crore grouping (`1,23,45,678`) in Bangla or English digits and parsing back
 - Compact notation for dashboards and headlines: `12.5 Lakh`, `১২.৫ লক্ষ`, `৳3.45Cr`, and parsing back
-- Bangla calendar conversion with month, weekday and season names
+- Bangla calendar conversion with month, weekday and season names, date parsing (`১লা বৈশাখ ১৪৩১`, `1st Baishakh 1431`), day/month/year arithmetic and month grids
 
 
 ## Install from GitHub Packages
@@ -153,6 +153,27 @@ formatBanglaDate('2024-12-16', { ordinalDay: true }); // "১লা পৌষ �
 
 Dates may be a `Date` (interpreted in local time), an ISO `YYYY-MM-DD` string or `{ year, month, day }`.
 
+#### Parsing, date arithmetic and month grids
+
+```ts
+parseBanglaDate('রবিবার, ১লা বৈশাখ ১৪৩১');   // { year: 1431, month: 1, day: 1 }
+parseBanglaDate('1st Baishakh, 1431 BS');    // { year: 1431, month: 1, day: 1 }
+tryParseBanglaDate('৩২ বৈশাখ ১৪৩১');         // null
+
+addBanglaDays({ year: 1430, month: 12, day: 30 }, 1);   // { year: 1431, month: 1, day: 1 }
+addBanglaMonths({ year: 1431, month: 6, day: 31 }, 1);  // { year: 1431, month: 7, day: 30 } (clamped)
+addBanglaYears({ year: 1430, month: 11, day: 30 }, 1);  // { year: 1431, month: 11, day: 29 }
+banglaDaysBetween({ year: 1431, month: 1, day: 1 }, { year: 1432, month: 1, day: 1 }); // 365
+compareBanglaDates(a, b);                                // -1, 0 or 1
+
+const cal = banglaMonthCalendar(1431, 1, { weekStart: 6 }); // Saturday-first grid
+cal.weeks; // rows of 7 cells: { day, weekday, gregorian } or null outside the month
+```
+
+`parseBanglaDate` reads everything `formatBanglaDate` writes (any combination of `weekday`, `ordinalDay`, `season` and digit script) plus common hand-written forms: Bangla or English digits, Bangla or romanised month names with spelling variants (জ্যৈষ্ঠ/জৈষ্ঠ্য, Boishakh/Baishakh, Choitro/Chaitra, ...), day suffixes (১লা, ২১শে, 1st, 22nd), an optional weekday, a trailing `বঙ্গাব্দ`/`সন`/`BS`, and numeric `1431-01-01`. It throws `TypeError` for text it cannot read and `RangeError` for dates that do not exist, a suffix that does not fit the day (`২লা`), or a weekday that does not match the date (pass `{ checkWeekday: false }` to ignore the weekday).
+
+`addBanglaMonths` and `addBanglaYears` clamp the day to the last day of the target month, so month arithmetic never produces an invalid date.
+
 #### Calendar rules
 
 This package implements the revised Bangladeshi national calendar (the Bangla Academy reform, with the later revision of month lengths), where Pohela Boishakh always falls on 14 April:
@@ -208,6 +229,7 @@ formatBanglaDate('2024-04-14');           // "১ বৈশাখ ১৪৩১"
 - ইংরেজিতে দক্ষিণ এশীয় পদ্ধতি (thousand, lakh, crore) অথবা আন্তর্জাতিক পদ্ধতি
 - টাকার অঙ্ক কথায় (বাংলা ও ইংরেজি), ইউনিট ও শেষ শব্দ কনফিগার করা যায়
 - বাংলা সন: গ্রেগরিয়ান থেকে বঙ্গাব্দ এবং উল্টোটা, মাস, বার ও ঋতুর নাম
+- বাংলা তারিখ পার্স করা (`parseBanglaDate('১লা বৈশাখ ১৪৩১')`), দিন/মাস/বছর যোগ-বিয়োগ, দুই তারিখের ব্যবধান এবং মাসের ক্যালেন্ডার গ্রিড (`banglaMonthCalendar`)
 
 ### বাংলা সনের নিয়ম
 

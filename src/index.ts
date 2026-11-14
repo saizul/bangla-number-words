@@ -37,3 +37,19 @@ export {
   isPohelaBoishakh,
 } from './calendar';
 export type { BanglaDate, DateInput, YMD, FormatBanglaDateOptions } from './calendar';
+export {
+  addBanglaDays,
+  addBanglaMonths,
+  addBanglaYears,
+  banglaDaysBetween,
+  compareBanglaDates,
+  banglaMonthCalendar,
+  parseBanglaDate,
+  tryParseBanglaDate,
+} from './calendar-ops';
+export type {
+  BanglaCalendarDay,
+  BanglaMonthCalendar,
+  BanglaMonthCalendarOptions,
+  ParseBanglaDateOptions,
+} from './calendar-ops';
