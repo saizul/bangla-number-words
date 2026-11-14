@@ -61,8 +61,8 @@ function isGregorianLeap(y: number): boolean {
   return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
 }
 
-/** Days since 1970-01-01 for a proleptic Gregorian date (no Date quirks). */
-function daysFromCivil(y: number, m: number, d: number): number {
+/** Days since 1970-01-01 for a proleptic Gregorian date (no Date quirks). @internal */
+export function daysFromCivil(y: number, m: number, d: number): number {
   const yy = m <= 2 ? y - 1 : y;
   const era = Math.floor(yy / 400);
   const yoe = yy - era * 400;
@@ -71,7 +71,8 @@ function daysFromCivil(y: number, m: number, d: number): number {
   return era * 146097 + doe - 719468;
 }
 
-function civilFromDays(z0: number): YMD {
+/** Inverse of `daysFromCivil`. @internal */
+export function civilFromDays(z0: number): YMD {
   const z = z0 + 719468;
   const era = Math.floor(z / 146097);
   const doe = z - era * 146097;
@@ -123,7 +124,8 @@ export function banglaMonthLength(banglaYear: number, month: number): number {
   return 30;
 }
 
-function weekdayOf(days: number): number {
+/** @internal */
+export function weekdayOf(days: number): number {
   return (((days + 4) % 7) + 7) % 7;
 }
 
