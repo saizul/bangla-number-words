@@ -13,7 +13,7 @@ npm install bangla-number-words
 - Bangla words in the Bangladeshi system: হাজার, লক্ষ (or লাখ), কোটি, with crore repetition above 99 crore ("দশ হাজার কোটি", "এক কোটি কোটি")
 - Decimals (দশমিক), negatives, arbitrary size via `bigint` or numeric strings
 - Ordinals: প্রথম, দ্বিতীয় ... দশম, then `তম`; short forms (১ম, ২য়, ৩য়, ৪র্থ), date forms (১লা, ২রা)
-- English words in the South Asian system (thousand, lakh, crore) or the international system
+- English words in the South Asian system (thousand, lakh, crore) or the international system, and parsing English words back to numbers (`englishWordsToNumber`)
 - Taka for invoices and cheques, in Bangla and English
 - Lakh/crore grouping (`1,23,45,678`) in Bangla or English digits and parsing back
 - Compact notation for dashboards and headlines: `12.5 Lakh`, `১২.৫ লক্ষ`, `৳3.45Cr`, and parsing back
@@ -78,6 +78,26 @@ Every function that accepts a number takes `number | bigint | string`. Strings m
 | `englishWords(n, opts)` | `system: 'indian' \| 'international'`, `case: 'title' \| 'lower' \| 'upper' \| 'sentence'`, `hyphenate`, `useAnd`, `negativeWord`, `decimalWord` |
 
 The international system supports values below 10^36.
+
+#### Parsing English words
+
+`englishWordsToNumber(text, opts)` reads English number words back into a number, for example the amount line of a
+cheque or an invoice imported from another system. Use `englishWordsToNumberString` for exact results beyond
+`Number.MAX_SAFE_INTEGER`.
+
+```ts
+englishWordsToNumber('Twelve Lakh Thirty Four Thousand Five Hundred Sixty Seven'); // 1234567
+englishWordsToNumber('one million two hundred thousand');                          // 1200000
+englishWordsToNumber('Ten Thousand Crore');                                        // 100000000000
+englishWordsToNumber('One Lakh, Twenty Thousand Only');                            // 120000
+englishWordsToNumber('minus three point one four');                                // -3.14
+englishWordsToNumberString('one crore crore');                                     // "100000000000000"
+```
+
+- Both systems, case-insensitive, with hyphens, commas, "and" and a trailing "only" allowed.
+- `lac`, `lacs`, `lakhs` and `crores` are accepted; mixing lakh/crore with million/billion is rejected.
+- Options: `negativeWords` (default `['minus', 'negative']`) and `decimalWord` (default `'point'`).
+- Malformed input (`'one one'`, `'one thousand one lakh'`, `'hundred'`) throws a `TypeError`.
 
 ### Ordinals
 
