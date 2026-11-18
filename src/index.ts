@@ -5,6 +5,8 @@ export type { BanglaWordsOptions } from './words-bn';
 export { wordsToNumber, wordsToNumberString } from './parse-words';
 export type { WordsToNumberOptions } from './parse-words';
 export { englishWords } from './words-en';
+export { englishWordsToNumber, englishWordsToNumberString } from './parse-words-en';
+export type { EnglishWordsToNumberOptions } from './parse-words-en';
 export type { EnglishWordsOptions, EnglishSystem, EnglishCase } from './words-en';
 export {
   banglaOrdinalWords,
